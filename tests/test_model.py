@@ -3,7 +3,9 @@ import torch
 from inference import ts  # Import the loaded model
 
 class TestModel(unittest.TestCase):
-    '''Unit tests for the doubleit model.'''
+    '''
+    Unit tests for the doubleit model.
+    '''
     def test_doubleit(self):
         '''
         Test that the model correctly doubles the input tensor.

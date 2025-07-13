@@ -1,48 +1,55 @@
-DoubleIt Model Deployment
-Overview
-Deploys a PyTorch model that doubles an input tensor: ( y = 2x ), where ( x \in \mathbb{R}^n ).
+# DoubleIt Model Deployment
+
+## Overview
+
+Deploys a PyTorch model that doubles an input tensor: ( y = 2x ), where ( $x \in \mathbb{R}^n$).
+
 Setup
 
-Python 3.13, PyTorch, Docker Desktop (Windows with WSL2).
-requirements.txt: torch
+- Python 3.13, PyTorch, Docker Desktop (Windows with WSL2).
+- Terraform (binary from https://www.terraform.io/downloads.html, extract to `C:\Terraform`, add to PATH).
+- Virtual environment (`env/`) with `requirements.txt`: `torch`, `fastapi`, `uvicorn`.
 
-Recreating doubleit_model.pt
+## Recreating doubleit_model.pt
 
-doubleit_model.pt missing; recreated with create_model.py:python create_model.py
+- Run: `python create_model.py`
 
+## Running Locally
 
-Fixed NameError in __torch__.py by removing invalid type hint __torch__.Model.
+- `python inference.py` outputs `tensor([2, 4, 6, 8])`.
 
-Running Locally
+## FastAPI
 
-python inference.py outputs tensor([2, 4, 6, 8]).
+- Run: `uvicorn api:app --host 0.0.0.0 --port 8000`
+- Test: `Invoke-WebRequest -Uri http://localhost:8000/infer -Method Post -Headers @{"Content-Type"="application/json"} -Body '{"input": [1, 2, 3, 4]}'` or `python -m unittest tests/test_api.py`
 
-Docker
+## Docker
 
-Build: docker build -t doubleit-model .
-Run: docker run doubleit-model
-Note: Ensure Docker Desktop is running with WSL2 backend.
+- Build: `docker build -t doubleit-model-api .`
+- Run: `docker run -p 8000:8000 doubleit-model-api`
 
-Unit Tests
+## Unit Tests
 
-Run: python -m unittest tests/test_model.py
+- Run: `python -m unittest discover tests`
 
-CI/CD
+## CI/CD
 
-GitHub Actions in .github/workflows/ci.yml runs tests on push.
+- GitHub Actions in `.github/workflows/ci.yml` runs tests on push.
 
-IaC
+## IaC
 
-main.tf defines Google Cloud Run service (placeholders).
+- `main.tf` defines Google Cloud Run service (placeholders).
+- Terraform installed via binary: `terraform -version`.
 
-Assumptions
+## Optional Enhancements
 
-doubleit_model.pt recreated from __torch__.py.
-Files (__torch__.py, .pkl) in root; tests in tests/.
-constants.pkl, data.pkl: Likely metadata/sample data, not used in inference.
-No live GCP deployment required.
+- **Package Manager**: Used `virtualenv` with `requirements.txt`.
+- **REST API**: FastAPI in `api.py`: `POST /infer {input: [1,2,3,4]} → {output: [2,4,6,8]}`.
+- **Monitoring/Versioning**: Propose MLflow for model versioning and output monitoring.
 
-Optional Proposals
+## Assumptions
 
-Flask REST API: POST /infer {input: [1,2,3,4]} → {output: [2,4,6,8]}.
-MLflow for model versioning.
+- `doubleit_model.pt` recreated from `__torch__.py`.
+- Files (`__torch__.py`, `.pkl`) in root; tests in `tests/`.
+- `constants.pkl`, `data.pkl`: Likely metadata/sample data, not used in inference.
+- No live GCP deployment required.

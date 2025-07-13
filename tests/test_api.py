@@ -3,6 +3,10 @@ from fastapi.testclient import TestClient
 from api import app  # Relative import from parent directory
 
 class TestApi(unittest.TestCase):
+    '''
+    Unit tests for the FastAPI inference endpoint.
+    Tests the /infer endpoint for model inference: y = 2x.
+    '''
     def setUp(self):
         """
         Set up FastAPI test client.
