@@ -1,4 +1,4 @@
-# Tenpo Technical Interview
+# Overview
 
 This project demonstrates deploying a machine learning model using modern DevOps practices, including containerization, unit testing, CI/CD, Infrastructure as Code (IaC), and comprehensive docstrings.
 
