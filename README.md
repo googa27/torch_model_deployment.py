@@ -1,50 +1,48 @@
-# Overview
+DoubleIt Model Deployment
+Overview
+Deploys a PyTorch model that doubles an input tensor: ( y = 2x ), where ( x \in \mathbb{R}^n ).
+Setup
 
-This project demonstrates deploying a machine learning model using modern DevOps practices, including containerization, unit testing, CI/CD, Infrastructure as Code (IaC), and comprehensive docstrings.
+Python 3.13, PyTorch, Docker Desktop (Windows with WSL2).
+requirements.txt: torch
 
-## Objectives
+Recreating doubleit_model.pt
 
-- **Containerization:** Package the model and its dependencies using Docker.
-- **Unit Tests:** Ensure code reliability with automated tests.
-- **CI/CD:** Automate build, test, and deployment pipelines.
-- **IaC:** Provision infrastructure using tools like Terraform or Ansible.
-- **Docstrings:** Maintain clear and informative code documentation.
+doubleit_model.pt missing; recreated with create_model.py:python create_model.py
 
-## Project Structure
 
-```
-.
-├── src/                # Source code and model
-├── tests/              # Unit tests
-├── Dockerfile          # Containerization setup
-├── .github/workflows/  # CI/CD pipelines
-├── infra/              # IaC scripts
-└── README.md           # Project documentation
-```
+Fixed NameError in __torch__.py by removing invalid type hint __torch__.Model.
 
-## Getting Started
+Running Locally
 
-1. **Clone the repository**
-2. **Build the Docker image**
-    ```bash
-    docker build -t tenpo-model .
-    ```
-3. **Run unit tests**
-    ```bash
-    pytest tests/
-    ```
-4. **Deploy infrastructure**
-    ```bash
-    cd infra/
-    terraform apply
-    ```
+python inference.py outputs tensor([2, 4, 6, 8]).
 
-## Contributing
+Docker
 
-- Write clear docstrings for all functions and classes.
-- Ensure all tests pass before submitting changes.
-- Follow the established CI/CD workflow.
+Build: docker build -t doubleit-model .
+Run: docker run doubleit-model
+Note: Ensure Docker Desktop is running with WSL2 backend.
 
-## License
+Unit Tests
 
-MIT License.
+Run: python -m unittest tests/test_model.py
+
+CI/CD
+
+GitHub Actions in .github/workflows/ci.yml runs tests on push.
+
+IaC
+
+main.tf defines Google Cloud Run service (placeholders).
+
+Assumptions
+
+doubleit_model.pt recreated from __torch__.py.
+Files (__torch__.py, .pkl) in root; tests in tests/.
+constants.pkl, data.pkl: Likely metadata/sample data, not used in inference.
+No live GCP deployment required.
+
+Optional Proposals
+
+Flask REST API: POST /infer {input: [1,2,3,4]} → {output: [2,4,6,8]}.
+MLflow for model versioning.
