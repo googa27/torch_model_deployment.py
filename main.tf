@@ -1,5 +1,5 @@
 provider "google" {
-  project = "your-project-id"  # Replace with a placeholder or note it’s assumed
+  project = "your-project-id" # Replace with a placeholder or note it’s assumed
   region  = "us-central1"
 }
 
@@ -10,7 +10,7 @@ resource "google_cloud_run_service" "default" {
   template {
     spec {
       containers {
-        image = "gcr.io/your-project-id/doubleit-model"  # Placeholder image
+        image = "gcr.io/your-project-id/doubleit-model" # Placeholder image
       }
     }
   }
