@@ -15,7 +15,8 @@ POST /infer {"input": [1, 2, 3, 4]}
   -> FastAPI app in api.py
   -> Pydantic InputData validation
   -> torch.tensor(input, dtype=torch.float32)
-  -> torch.jit.load("doubleit_model.pt") on each request
+  -> preloaded DoubleItModelService verifies artifacts/doubleit.manifest.json and SHA-256
+  -> torch.jit.load("doubleit_model.pt", map_location="cpu") once at application startup
   -> TorchScript Model.forward, f(x)=2x
   -> {"output": [2.0, 4.0, 6.0, 8.0]}
 ```
@@ -45,7 +46,7 @@ Windows users can run the same Python commands from PowerShell or WSL2. The old 
 python create_model.py
 ```
 
-This rewrites `doubleit_model.pt` from `__torch__.py`.
+This rewrites `doubleit_model.pt` from `__torch__.py` and updates the governed manifest/hash in `artifacts/doubleit.manifest.json`.
 
 ## Run local inference
 
@@ -88,14 +89,16 @@ Invoke-WebRequest -Uri http://localhost:8000/infer -Method Post -Headers @{"Cont
 ## Tests and CI
 
 ```bash
-python -m unittest discover tests
+python -m pytest -q
+python scripts/check_portfolio_architecture.py
+docker build -t doubleit-model-api:test .
 ```
 
-The GitHub Actions workflow installs `requirements.txt` and runs the unittest suite on push. It does not build Docker images, run containers, apply Terraform, or verify a live cloud deployment.
+GitHub Actions runs pytest, the architecture gate, and a Docker build-context smoke test. It does not apply Terraform or claim a verified live cloud deployment.
 
 ## Docker and Terraform status
 
-Docker commands are present but are not CI-verified in this repository:
+Docker image construction is CI-verified; live cloud deployment is not:
 
 ```bash
 docker build -t doubleit-model-api .
@@ -113,8 +116,7 @@ terraform apply
 
 ## Current limitations
 
-- `api.py` loads `doubleit_model.pt` inside the request handler, so the model is reloaded for every inference request.
 - No authentication, authorization, rate limiting, monitoring, tracing, model registry, or rollout policy is implemented.
-- `constants.pkl` and `data.pkl` are present but not used by the inference path.
+- Legacy raw pickle sidecars are intentionally absent; runtime accepts only the repository-owned TorchScript artifact after manifest/path/hash validation.
 - `requirements.txt` includes some packages that are not needed for the minimal FastAPI/TorchScript path.
 - The service demonstrates transport and packaging mechanics for a toy f(x)=2x model; it is not a production ML serving stack.
