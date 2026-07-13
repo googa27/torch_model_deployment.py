@@ -1,0 +1,176 @@
+{
+  "schema_version": "1.0.0",
+  "repository": {
+    "owner": "googa27",
+    "name": "torch_model_deployment.py",
+    "profile": "application",
+    "status": "ML Deployment Demo",
+    "project": "https://github.com/users/googa27/projects/24",
+    "issue": "https://github.com/googa27/torch_model_deployment.py/issues/1"
+  },
+  "architecture": {
+    "style": "evolutionary, contract-first, repository-specific",
+    "layers": [],
+    "import_boundaries": {
+      "authority": "repository-specific existing gates plus this contract",
+      "forbidden": [],
+      "cycle_policy": "acyclic runtime layers unless an exact exception is recorded"
+    },
+    "public_api_paths": [],
+    "extension_points": [
+      "typed public APIs",
+      "deterministic CLI/contracts",
+      "capability registry",
+      "adapters behind explicit protocols"
+    ]
+  },
+  "source_layout": {
+    "python_rules_applicable": false,
+    "python_source_roots": [],
+    "metadata_names": [
+      "ARCHITECTURE.md",
+      "ARCHITECTURE.yaml",
+      "README.md",
+      "__init__.py",
+      "py.typed"
+    ],
+    "allowed_non_python_files": [],
+    "future_rule": "Any new Python package uses a src layout unless an evidence-backed exception is approved."
+  },
+  "limits": {
+    "max_immediate_runtime_entries": 10,
+    "max_python_module_lines": 500,
+    "measurement": "physical UTF-8 lines; immediate runtime .py files excluding __init__.py plus runtime package directories"
+  },
+  "libraries": {
+    "selection_policy": "Prefer well-maintained libraries; record maintenance/API/license evidence and adapter boundary before custom implementation.",
+    "decisions": [
+      {
+        "capability": "existing runtime stack",
+        "selected": [
+          "no stable runtime manifest detected"
+        ],
+        "alternatives": [
+          "custom reimplementation"
+        ],
+        "evidence": "pyproject.toml/package.json/requirements and docs/ARCHITECTURE.md",
+        "adapter_boundary": "repository public ports",
+        "custom_code_reason": "domain semantics, composition, adapters, or genuinely missing algorithms only"
+      },
+      {
+        "capability": "portfolio architecture bootstrap",
+        "selected": [
+          "Python standard library JSON parser",
+          "JSON-compatible YAML 1.2 contract"
+        ],
+        "alternatives": [
+          "hand-written YAML parser",
+          "mandatory remote governance service"
+        ],
+        "evidence": "docs/ARCHITECTURE.md",
+        "adapter_boundary": "scripts/check_portfolio_architecture.py",
+        "custom_code_reason": "narrow repository-specific fitness function not supplied by a maintained generic package"
+      }
+    ]
+  },
+  "interfaces": {
+    "ai": {
+      "primary_agent": "Hermes Agent",
+      "context_file": "AGENTS.md",
+      "interaction": "AGENTS + deterministic serve/test/build commands and capability manifest; MCP not needed.",
+      "capability_discovery": "AGENTS.md plus the architecture checker is the current discovery surface; add a deterministic CLI/capability manifest before new maintained runtime behavior.",
+      "skills": "Use/update a repo or class-level Hermes skill for recurring non-trivial workflows",
+      "plugin_mcp_policy": "deferred unless stable interfaces and measured multi-client/tool interoperability justify it",
+      "declared_entrypoints": [],
+      "decision_ladder": [
+        "AGENTS.md and linked contracts",
+        "typed importable API and deterministic CLI/capability manifest",
+        "Hermes skill for recurring procedures",
+        "plugin only for measured shared lifecycle/tool needs",
+        "MCP only for measured interoperable multi-client remote discovery"
+      ],
+      "mutation_safety": "Mutation is explicit, typed, least-privileged, human-reviewable, and independently verified; no autonomous public side effects by default."
+    },
+    "human": {
+      "interaction": "Typed inference client/model metadata API and notebook example; context manager only for real server/session lifecycle.",
+      "public_api_paths": [],
+      "notebook_policy": "deterministic public-synthetic notebook/example for active libraries; explicit inapplicable/revival decision otherwise",
+      "dunder_policy": "Only documented lawful Python/NumPy/IPython protocols with algebraic/parity tests; named methods for policy, effects, diagnostics, I/O, or ambiguity",
+      "dunder_plan": [
+        "Immutable model/request/response metadata may use deterministic __repr__ and value equality.",
+        "Inference, loading, device selection, batching, network service, and persistence remain named methods.",
+        "Tensor/NumPy protocols stay framework-owned; do not wrap them with surprising custom operators."
+      ],
+      "forbidden_dunders": [
+        "Ambiguous arithmetic/order",
+        "Stateful or effectful operators",
+        "Lossy implicit conversion",
+        "Dunders that hide policy, I/O, diagnostics, or failure modes"
+      ]
+    }
+  },
+  "tests": {
+    "required_suites": [
+      "unit",
+      "integration",
+      "e2e",
+      "architecture"
+    ],
+    "commands": {
+      "setup": "python -m pip install -r requirements.txt",
+      "test": "python -m pytest -q",
+      "lint": "ruff check .",
+      "architecture": "python scripts/check_portfolio_architecture.py"
+    },
+    "ci_workflow": ".github/workflows/portfolio-architecture.yml",
+    "mirror_source": "where pertinent"
+  },
+  "data": {
+    "consumes_data": true,
+    "architecture": "Model/data artifacts need provenance, hashes, classification, and reproducible build/serve boundary.",
+    "required_controls": [
+      "source registry",
+      "typed contracts",
+      "classification",
+      "lineage",
+      "quality",
+      "freshness/vintage/effective time",
+      "content identity",
+      "replay",
+      "validation"
+    ],
+    "core_repositories": {
+      "PDP": "Avoid finance cores; may emit generic ModelOutputBundle for UI if reused.",
+      "financial_problem_formulations": "Avoid finance cores; may emit generic ModelOutputBundle for UI if reused.",
+      "ui_and_artifacts": "Avoid finance cores; may emit generic ModelOutputBundle for UI if reused."
+    },
+    "source_registry_plan": [
+      "versioned model artifacts and validated inference payloads with hashes/provenance"
+    ],
+    "flow": "source registry -> typed acquisition -> immutable Bronze -> canonical Silver -> curated Gold/features -> formulation/model -> governed output -> read-only UI/API/notebook",
+    "storage_and_replay": "Immutable raw/content-addressed inputs; canonical typed products; idempotent replay by source identity and effective/vintage time where applicable.",
+    "quality_and_lineage": "Validate schema, grain, units, classification, lineage, freshness, licence, and content identity before consumption; fail closed on missing evidence."
+  },
+  "governance": {
+    "architecture_source": "docs/ARCHITECTURE.yaml",
+    "update_rule": "Update contract, prose, AGENTS, tests, CI, AI/human interfaces, and public API in the same change.",
+    "checker": "scripts/check_portfolio_architecture.py",
+    "required_documents": [
+      "AGENTS.md",
+      "docs/ARCHITECTURE.yaml",
+      "docs/ARCHITECTURE.md"
+    ],
+    "exception_policy": "exact scope, reason, owner, risk, accepted ceiling, and refactoring trigger; no-growth ratchet"
+  },
+  "exceptions": [
+    {
+      "rule": "python_source_layout",
+      "path": "src/",
+      "reason": "The repository is non-Python, empty, notebook/script-first, or uses a legacy flat/monorepo layout; forcing migration in a governance-only change would be unsafe.",
+      "owner": "googa27 Portfolio Project #24",
+      "risk": "Python source topology is not yet protected by the src-specific limits.",
+      "accepted_ceiling": 0,
+      "refactoring_trigger": "Before adding a maintained Python package or materially reviving runtime code, design a src layout in ARCHITECTURE.yaml and activate blocking source checks."
+    }
+  ]
+}
