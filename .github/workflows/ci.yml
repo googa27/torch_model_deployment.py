@@ -1,17 +1,25 @@
-name: CI # Continuous Integration Workflow
-on: [push] # Trigger on push events
+name: CI
+
+on:
+  push:
+  pull_request:
+
 jobs:
-  build:
-    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+  test:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2 # Check out the repository
-    - name: Set up Python # Set up Python environment
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.13'
-    - name: Install dependencies` # Install required Python packages
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Run tests # Run the test suite
-      run: python -m unittest discover tests
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+      - name: Run unit/API tests
+        run: python -m pytest -q
+      - name: Run architecture gate
+        run: python scripts/check_portfolio_architecture.py
+      - name: Verify Docker build context
+        run: docker build -t doubleit-model-api:test .
