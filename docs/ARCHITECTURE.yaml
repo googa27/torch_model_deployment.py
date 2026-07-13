@@ -10,13 +10,27 @@
   },
   "architecture": {
     "style": "evolutionary, contract-first, repository-specific",
-    "layers": [],
+    "layers": [
+      "FastAPI typed API",
+      "artifact manifest/hash boundary",
+      "PyTorch TorchScript inference service",
+      "artifact build script"
+    ],
     "import_boundaries": {
       "authority": "repository-specific existing gates plus this contract",
-      "forbidden": [],
+      "forbidden": [
+        "API must not call torch.jit.load per request",
+        "API must not accept user-supplied model paths or pickle bytes",
+        "raw .pkl files are not serving artifacts",
+        "artifact loading must pass manifest path containment and SHA-256 verification"
+      ],
       "cycle_policy": "acyclic runtime layers unless an exact exception is recorded"
     },
-    "public_api_paths": [],
+    "public_api_paths": [
+      "api.py",
+      "model_artifact.py",
+      "create_model.py"
+    ],
     "extension_points": [
       "typed public APIs",
       "deterministic CLI/contracts",
@@ -46,16 +60,20 @@
     "selection_policy": "Prefer well-maintained libraries; record maintenance/API/license evidence and adapter boundary before custom implementation.",
     "decisions": [
       {
-        "capability": "existing runtime stack",
+        "capability": "model serving demo runtime",
         "selected": [
-          "no stable runtime manifest detected"
+          "PyTorch TorchScript 2.7.1",
+          "FastAPI 0.116.1",
+          "Pydantic 2.11.7"
         ],
         "alternatives": [
-          "custom reimplementation"
+          "raw pickle/model-per-request loading",
+          "Flask ad-hoc API",
+          "custom JSON validation"
         ],
-        "evidence": "pyproject.toml/package.json/requirements and docs/ARCHITECTURE.md",
-        "adapter_boundary": "repository public ports",
-        "custom_code_reason": "domain semantics, composition, adapters, or genuinely missing algorithms only"
+        "evidence": "requirements.txt pins maintained PyTorch/FastAPI/Pydantic stack; README and model_artifact.py document manifest/hash boundary and no per-request model loading",
+        "adapter_boundary": "model_artifact.py DoubleItModelService plus typed FastAPI DTOs in api.py",
+        "custom_code_reason": "demo DTOs, manifest verification, and thin service composition only; tensor execution remains PyTorch-owned"
       },
       {
         "capability": "portfolio architecture bootstrap",
@@ -78,10 +96,15 @@
       "primary_agent": "Hermes Agent",
       "context_file": "AGENTS.md",
       "interaction": "AGENTS + deterministic serve/test/build commands and capability manifest; MCP not needed.",
-      "capability_discovery": "AGENTS.md plus the architecture checker is the current discovery surface; add a deterministic CLI/capability manifest before new maintained runtime behavior.",
+      "capability_discovery": "AGENTS.md, README.md, artifacts/doubleit.manifest.json, /health, create_model.py, and architecture checker describe build/serve/test capabilities.",
       "skills": "Use/update a repo or class-level Hermes skill for recurring non-trivial workflows",
       "plugin_mcp_policy": "deferred unless stable interfaces and measured multi-client/tool interoperability justify it",
-      "declared_entrypoints": [],
+      "declared_entrypoints": [
+        "python create_model.py",
+        "uvicorn api:app --host 127.0.0.1 --port 8000",
+        "python -m pytest -q",
+        "python scripts/check_portfolio_architecture.py"
+      ],
       "decision_ladder": [
         "AGENTS.md and linked contracts",
         "typed importable API and deterministic CLI/capability manifest",
@@ -93,7 +116,10 @@
     },
     "human": {
       "interaction": "Typed inference client/model metadata API and notebook example; context manager only for real server/session lifecycle.",
-      "public_api_paths": [],
+      "public_api_paths": [
+        "api.py",
+        "model_artifact.py"
+      ],
       "notebook_policy": "deterministic public-synthetic notebook/example for active libraries; explicit inapplicable/revival decision otherwise",
       "dunder_policy": "Only documented lawful Python/NumPy/IPython protocols with algebraic/parity tests; named methods for policy, effects, diagnostics, I/O, or ambiguity",
       "dunder_plan": [
@@ -122,12 +148,12 @@
       "lint": "ruff check .",
       "architecture": "python scripts/check_portfolio_architecture.py"
     },
-    "ci_workflow": ".github/workflows/portfolio-architecture.yml",
+    "ci_workflow": ".github/workflows/ci.yml",
     "mirror_source": "where pertinent"
   },
   "data": {
     "consumes_data": true,
-    "architecture": "Model/data artifacts need provenance, hashes, classification, and reproducible build/serve boundary.",
+    "architecture": "Versioned local TorchScript artifact -> explicit manifest with SHA-256/content identity -> verified one-time load -> typed Pydantic request -> inference_mode prediction -> typed response/health metadata.",
     "required_controls": [
       "source registry",
       "typed contracts",
@@ -145,11 +171,11 @@
       "ui_and_artifacts": "Avoid finance cores; may emit generic ModelOutputBundle for UI if reused."
     },
     "source_registry_plan": [
-      "versioned model artifacts and validated inference payloads with hashes/provenance"
+      "doubleit_model.pt built from __torch__.py via create_model.py and recorded in artifacts/doubleit.manifest.json with SHA-256"
     ],
     "flow": "source registry -> typed acquisition -> immutable Bronze -> canonical Silver -> curated Gold/features -> formulation/model -> governed output -> read-only UI/API/notebook",
     "storage_and_replay": "Immutable raw/content-addressed inputs; canonical typed products; idempotent replay by source identity and effective/vintage time where applicable.",
-    "quality_and_lineage": "Validate schema, grain, units, classification, lineage, freshness, licence, and content identity before consumption; fail closed on missing evidence."
+    "quality_and_lineage": "Artifact serving fails closed on manifest path escape, artifact path escape, unsupported framework/schema/dtype, malformed hash, missing fields, and hash mismatch; API validates finite bounded numeric vectors; health returns model/framework/hash/contract."
   },
   "governance": {
     "architecture_source": "docs/ARCHITECTURE.yaml",

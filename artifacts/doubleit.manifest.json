@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "name": "doubleit",
+  "framework": "torchscript",
+  "artifact_path": "doubleit_model.pt",
+  "sha256": "b66907e89207e32c1f5dac82e2c87c2084e338b9a84f8dfdf0ef6a5bfae4b13c",
+  "input_dtype": "float32",
+  "output_dtype": "float32",
+  "contract": "output = input * 2 for a one-dimensional finite numeric vector",
+  "loader_policy": "Load only this local TorchScript artifact after manifest path containment and SHA-256 verification; do not accept per-request model paths or raw pickle artifacts."
+}

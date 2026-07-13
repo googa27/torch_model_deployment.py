@@ -22,7 +22,7 @@ Source of truth: `docs/ARCHITECTURE.yaml`. Tracking: [Project #24](https://githu
 
 | Capability | Selected route | Alternatives | Boundary / custom-code rule |
 |---|---|---|---|
-| Existing runtime stack | No stable runtime dependency manifest was detected; revival requires a dependency decision table. | Reimplementation from scratch | Preserve public adapters; research maintenance/API/license before additions. |
+| Model serving demo runtime | PyTorch TorchScript 2.7.1 + FastAPI 0.116.1 + Pydantic 2.11.7 | Raw pickle/model-per-request loading; Flask ad-hoc API; custom JSON validation | `model_artifact.py` verifies manifest path containment and SHA-256 before one-time `torch.jit.load`; `api.py` owns typed DTOs and health/serve boundaries. |
 | Architecture contract bootstrap | Python standard-library JSON parser over the JSON subset of YAML 1.2 | Hand-written YAML parser; mandatory platform service | Repo-local dependency-free structural gate; richer maintained tools remain repo-specific. |
 | Import/dependency rules | Existing repo lint/import tools where configured; declarative YAML boundary is authoritative | Custom import framework | Keep custom AST checks narrow; use maintained Import Linter/Tach/Ruff/deptry when warranted. |
 | AI interaction | AGENTS + deterministic CLI/contracts + capability discovery + skills | MCP/plugin in every repo | Escalate only after measured interoperability/lifecycle need. |
@@ -33,7 +33,11 @@ Source of truth: `docs/ARCHITECTURE.yaml`. Tracking: [Project #24](https://githu
 - Human/notebook: Typed inference client/model metadata API and notebook example; context manager only for real server/session lifecycle.
 - Planned Python protocols: Immutable model/request/response metadata may use deterministic __repr__ and value equality.; Inference, loading, device selection, batching, network service, and persistence remain named methods.; Tensor/NumPy protocols stay framework-owned; do not wrap them with surprising custom operators.
 - Core posture: Avoid finance cores; may emit generic ModelOutputBundle for UI if reused.
-- Data posture: Model/data artifacts need provenance, hashes, classification, and reproducible build/serve boundary.
+- Data posture: Local TorchScript artifact -> explicit manifest/SHA-256 -> verified one-time load -> typed Pydantic request -> `torch.inference_mode()` prediction -> typed response and `/health` metadata. Raw `.pkl` artifacts are removed from the serving repository.
+
+### Serving safety boundary
+
+The API no longer loads the model per request and never accepts a user-supplied model path or pickle bytes. `create_model.py` rebuilds the TorchScript artifact and manifest together. `model_artifact.py` fails closed on hash mismatch or path escape. Tests cover build, health, DTO validation, artifact verification, and serve behavior.
 
 ### Extension and exception discipline
 
