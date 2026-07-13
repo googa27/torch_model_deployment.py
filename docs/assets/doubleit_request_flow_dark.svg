@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">DoubleIt FastAPI request and deployment flow</title>
+  <desc id="desc">Dark diagram showing POST request validation, tensor conversion, per-request TorchScript loading, f(x)=2x inference, JSON response, and unverified Docker and Terraform infrastructure paths.</desc>
+  <defs>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#58a6ff"/></marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3fb950"/></marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d29922"/></marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ff7b72"/></marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#010409" flood-opacity="0.55"/></filter>
+    <style>
+      .bg { fill:#0d1117; }
+      .panel { fill:#161b22; stroke:#30363d; stroke-width:2; rx:20; filter:url(#shadow); }
+      .lane { fill:none; stroke:#30363d; stroke-width:2; stroke-dasharray:8 8; }
+      .title { fill:#f0f6fc; font:700 28px Inter,Segoe UI,Arial,sans-serif; }
+      .subtitle { fill:#8b949e; font:500 15px Inter,Segoe UI,Arial,sans-serif; }
+      .label { fill:#f0f6fc; font:700 17px Inter,Segoe UI,Arial,sans-serif; }
+      .small { fill:#c9d1d9; font:500 14px Inter,Segoe UI,Arial,sans-serif; }
+      .tiny { fill:#8b949e; font:500 12px Inter,Segoe UI,Arial,sans-serif; }
+      .cyan { stroke:#39c5cf; }
+      .purple { stroke:#a371f7; }
+      .green { stroke:#3fb950; }
+      .orange { stroke:#d29922; }
+      .blue { stroke:#58a6ff; }
+      .red { stroke:#ff7b72; }
+      .fillCyan { fill:#39c5cf; }
+      .fillPurple { fill:#a371f7; }
+      .fillGreen { fill:#3fb950; }
+      .fillOrange { fill:#d29922; }
+      .fillBlue { fill:#58a6ff; }
+      .fillRed { fill:#ff7b72; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1280" height="720"/>
+  <text x="44" y="52" class="title">DoubleIt deployment demo: request flow and unverified infrastructure boundary</text>
+  <text x="44" y="80" class="subtitle">The serving path is a FastAPI + TorchScript toy model where Model.forward implements f(x)=2x.</text>
+
+  <rect x="42" y="118" width="1170" height="265" class="lane" rx="24"/>
+  <text x="64" y="146" class="small">Request execution path</text>
+  <rect x="42" y="424" width="1170" height="190" class="lane" rx="24"/>
+  <text x="64" y="452" class="small">Build / packaging / infrastructure path</text>
+
+  <rect x="72" y="190" width="160" height="100" class="panel blue"/>
+  <circle cx="98" cy="218" r="8" class="fillBlue"/>
+  <text x="116" y="224" class="label">Client</text>
+  <text x="92" y="253" class="small">POST /infer</text>
+  <text x="92" y="275" class="small">JSON input list</text>
+
+  <rect x="282" y="190" width="175" height="100" class="panel cyan"/>
+  <circle cx="308" cy="218" r="8" class="fillCyan"/>
+  <text x="326" y="224" class="label">FastAPI</text>
+  <text x="302" y="253" class="small">api.py route</text>
+  <text x="302" y="275" class="small">Pydantic InputData</text>
+
+  <rect x="507" y="190" width="175" height="100" class="panel purple"/>
+  <circle cx="533" cy="218" r="8" class="fillPurple"/>
+  <text x="551" y="224" class="label">Tensor transform</text>
+  <text x="527" y="253" class="small">list -> torch.tensor</text>
+  <text x="527" y="275" class="small">dtype float32</text>
+
+  <rect x="732" y="190" width="180" height="100" class="panel orange"/>
+  <circle cx="758" cy="218" r="8" class="fillOrange"/>
+  <text x="776" y="224" class="label">Load model</text>
+  <text x="752" y="253" class="small">torch.jit.load</text>
+  <text x="752" y="275" class="small">runs per request</text>
+
+  <rect x="962" y="190" width="180" height="100" class="panel green"/>
+  <circle cx="988" cy="218" r="8" class="fillGreen"/>
+  <text x="1006" y="224" class="label">Inference</text>
+  <text x="982" y="253" class="small">Model.forward</text>
+  <text x="982" y="275" class="small">f(x)=2x -> JSON</text>
+
+  <line x1="232" y1="240" x2="282" y2="240" stroke="#58a6ff" stroke-width="4" marker-end="url(#arrowBlue)"/>
+  <line x1="457" y1="240" x2="507" y2="240" stroke="#58a6ff" stroke-width="4" marker-end="url(#arrowBlue)"/>
+  <line x1="682" y1="240" x2="732" y2="240" stroke="#a371f7" stroke-width="4" marker-end="url(#arrowBlue)"/>
+  <line x1="912" y1="240" x2="962" y2="240" stroke="#3fb950" stroke-width="4" marker-end="url(#arrowGreen)"/>
+
+  <path d="M 362 290 C 362 350 760 350 1048 290" fill="none" stroke="#ff7b72" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#arrowRed)"/>
+  <text x="527" y="347" class="tiny">validation/load/inference exceptions return HTTP 400</text>
+
+  <rect x="72" y="492" width="190" height="86" class="panel purple"/>
+  <circle cx="98" cy="519" r="8" class="fillPurple"/>
+  <text x="116" y="525" class="label">Model source</text>
+  <text x="92" y="553" class="small">__torch__.py Model</text>
+
+  <rect x="312" y="492" width="190" height="86" class="panel purple"/>
+  <circle cx="338" cy="519" r="8" class="fillPurple"/>
+  <text x="356" y="525" class="label">create_model.py</text>
+  <text x="332" y="553" class="small">scripts and saves .pt</text>
+
+  <rect x="552" y="492" width="190" height="86" class="panel green"/>
+  <circle cx="578" cy="519" r="8" class="fillGreen"/>
+  <text x="596" y="525" class="label">doubleit_model.pt</text>
+  <text x="572" y="553" class="small">TorchScript artifact</text>
+
+  <rect x="792" y="492" width="170" height="86" class="panel orange"/>
+  <circle cx="818" cy="519" r="8" class="fillOrange"/>
+  <text x="836" y="525" class="label">Dockerfile</text>
+  <text x="812" y="553" class="small">not CI-verified</text>
+
+  <rect x="1012" y="492" width="170" height="86" class="panel orange"/>
+  <circle cx="1038" cy="519" r="8" class="fillOrange"/>
+  <text x="1056" y="525" class="label">main.tf</text>
+  <text x="1032" y="553" class="small">Cloud Run sketch</text>
+
+  <line x1="262" y1="535" x2="312" y2="535" stroke="#a371f7" stroke-width="4" marker-end="url(#arrowBlue)"/>
+  <line x1="502" y1="535" x2="552" y2="535" stroke="#3fb950" stroke-width="4" marker-end="url(#arrowGreen)"/>
+  <line x1="742" y1="535" x2="792" y2="535" stroke="#d29922" stroke-width="4" marker-end="url(#arrowOrange)"/>
+  <line x1="962" y1="535" x2="1012" y2="535" stroke="#d29922" stroke-width="4" marker-end="url(#arrowOrange)"/>
+
+  <rect x="72" y="638" width="1110" height="48" fill="#161b22" stroke="#30363d" stroke-width="1.5" rx="16"/>
+  <circle cx="105" cy="661" r="6" class="fillBlue"/><text x="119" y="666" class="tiny">transport</text>
+  <circle cx="204" cy="661" r="6" class="fillCyan"/><text x="218" y="666" class="tiny">request identity</text>
+  <circle cx="351" cy="661" r="6" class="fillPurple"/><text x="365" y="666" class="tiny">transformation</text>
+  <circle cx="506" cy="661" r="6" class="fillGreen"/><text x="520" y="666" class="tiny">validated output/artifact</text>
+  <circle cx="697" cy="661" r="6" class="fillOrange"/><text x="711" y="666" class="tiny">unverified infra command</text>
+  <circle cx="902" cy="661" r="6" class="fillRed"/><text x="916" y="666" class="tiny">fail / HTTP 400</text>
+</svg>
